@@ -1,0 +1,169 @@
+---
+title: "Project Two"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Due Oct. 13 at 11:59 PM. 
+
+For this first part of the exam, you can either use `surveys_complete.csv` or your own data. If you are using your own data, you must have data in which you think you have a numerical predictor variable and a numerical response variable. If you are using `surveys_complete`, you can use weight and hindfoot_length for this.
+
+Save this file in your `projects` directory. You can either save it in a project two subdirectory, or just put it in projects. Either way is fine.
+
+
+1) Load in your data. Which variable will you be using as a predictor, and which as a response? (5 pts)
+
+```{r}
+surveys <- read_csv("data/surveys.csv")
+
+```
+
+```
+Predictor <- Hindfoot_length
+Response <- Weight
+```
+
+2) Plot the two against each other with a scatter plot. Do the data appear to be related linearly? (5 pts)
+
+
+```{r}
+ggplot(data = surveys_complete, mapping = aes(x = weight, y = hindfoot_length)) +
+  geom_point()
+```
+
+```
+Maybe.
+```
+
+
+3) Fit the linear model. View the summary. (5 pts)
+
+
+```{r}
+model_fit <- lm(hindfoot_length ~ weight , data = surveys_complete)
+summary(model_fit)
+```
+
+4) Does the summary make sense when you compare it to the plot you made? Does our model have good predictive power? Evaluate the residual standard error, intercept, and R-Squared in particular. Would you say your predictor predicts the response?  (10 pts)
+
+
+```
+The residual standard error is quite low value of 6.964, which predicts a good model that fits the data pretty well. The R-squared value of 0.4673 shows that most data was predictable with this model. However, the data being such a varies in size going from low min value to large max value natually makes it hard to plot. The p-value is really low, which means the intercept and weight have strong impact. 
+```
+
+
+5) Plot the model on the graph. Increase the size of the text so it is comfortably readable at 5 feet. Make sure axis labels are readable and not overlapping with one another. (5 pts)
+
+```
+ggplot(data = surveys_complete, mapping = aes(x = weight, y = hindfoot_length)) +
++ geom_point() + theme(text= element_text(size=35))
+```
+
+
+6) Check the normality of the residuals. Do they look OK? Are we violating assumptions? (5 pts)
+
+```
+
+The normality look fine but the deviation of data is significant in the Q-Q plot. We are not violating any assumption but given the data's nature, it is expected to not really be a clean linear regression. 
+
+```
+
+Why is normality of residuals important? 
+
+```{r}
+In linear regression, residual normality is critical because it supports the validity of statistical inferences, model interpretability, and prediction accuracy. 
+```
+
+7) If you are using `surveys_complete`: Is there interspecific variation in the linear model? Hint: look at our prior work with facet plots. (15 pts) 
+
+If you are *not* using  `surveys_complete`: Do you think there are groupings within your data that may have a separate linear model? Try grouping the data by that variable and redoing the lm. If this would not make sense for your data, you may also attempt to do multiple predictor variables. (15 pts)
+
+```{r}
+There is a lot of variation within different species in terms of hindfootl length and its relation to weight, so we would expect a crazy data output. 
+```
+
+## Part Two
+
+In this portion, you are free to use your own data if you have a categorical predictor variable and a response variable. Otherwise, you may use the columns sex and weight in `surveys_complete`
+
+1) First, plot the data grouped by sex (5 pts)
+
+```{r}
+
+ggplot(surveys_complete, aes(x= sex, y=weight))+ geom_point()
+```
+
+2) Try an ANOVA of this data (5 pt)
+
+```{r}
+model_two_surveys <- lm(weight~sex, data = surveys_complete)
+aov(model_two_surveys) -> anova_model_fit
+summary(anova_model_fit)
+```
+
+3) How about a linear model? What information does this give you that an ANOVA can't? (5 pts)
+
+
+```{r}
+model_fit <- lm(weight ~ sex , data = surveys_complete)
+summary(model_fit)
+```
+
+```
+Linear models can give more versatile reults in the plot compared to ANOVA because it can handle both continuous and categorical predictors, while ANOVA is made to compare group means. 
+```
+
+3) Plot the lm with the data, with points colored by sex. (10 pts)
+
+
+```{r}
+colored_data <- ggplot(surveys_complete, aes(x= weight, y= hindfoot_length, color = sex))+ geom_jitter()
+colored_data + geom_smooth(method = "lm", color = "black", size = 0.5)
+```
+
+4) Choose any model we've looked at so far, but use two predictor variables. Perform an LM, plot the results, and state if this changes your interpretation of the relationship between variables (10 pts)
+
+```{r}
+model_fit <- lm(body_depth~frontal_lobe + rear_width, data = crabs)
+
+```
+
+```{r}
+ggplot(crabs, aes(x = rear_width, y = body_width, color = frontal_lobe)) +
++ geom_point(size = 2.5) +
++ labs(x = "rear_width (mm)",
++ y = "Body Depth (mm)",
++ color = "frontal_lobe (mm)") +
++ scale_color_distiller(palette = "Reds") +
++ theme(legend.position = "bottom")
+augment(model_fit) -> augmented_fit
+qqnorm(augmented_fit$.resid)
+qqline(augmented_fit$resid, col = "red")
+```
+
+```
+# Text answer here
+```
+
+## Part Three
+
+
+1) Add and commit this document (5 pts)
+
+```
+git add project_two.rmd
+git commit -m "project 2"
+```
+
+2) Push your changes to github (10 pts)
+
+```
+git push -u origin main
+```
+
+
+
+# MS students
+
+My expectation is that you'll do this with your own data. If any part of this doesn't make sense with your data, please get in touch ASAP so we can work it out.
